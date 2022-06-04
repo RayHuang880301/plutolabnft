@@ -20,28 +20,16 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         _setDefaultRoyalty(owner(), 1000);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC1155, ERC2981)
-        returns (bool)
-    {
-        return
-            interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(interfaceId);
-    }
-
     struct Nft {
         uint256 maxAmount;
         uint256 preSalePrice;
         uint256 publicPrice;
-        uint256 freeClaimStartTime;
-        uint256 freeClaimEndTime;
-        uint256 preSaleStartTime;
-        uint256 preSaleEndTime;
-        uint256 publicSaleStartTime;
-        uint256 publicSaleEndTime;
+        uint32 freeClaimStartTime;
+        uint32 freeClaimEndTime;
+        uint32 preSaleStartTime;
+        uint32 preSaleEndTime;
+        uint32 publicSaleStartTime;
+        uint32 publicSaleEndTime;
         uint256 maxPublicMintAmountPerTx;
         uint256 maxPublicMintAmountPerAddress;
         bytes32 freeClaimMerkleRoot;

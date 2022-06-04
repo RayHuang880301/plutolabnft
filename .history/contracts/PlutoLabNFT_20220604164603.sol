@@ -20,18 +20,6 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         _setDefaultRoyalty(owner(), 1000);
     }
 
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC1155, ERC2981)
-        returns (bool)
-    {
-        return
-            interfaceId == type(IERC2981).interfaceId ||
-            super.supportsInterface(interfaceId);
-    }
-
     struct Nft {
         uint256 maxAmount;
         uint256 preSalePrice;
@@ -116,19 +104,18 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         bytes32[] calldata proof
     ) external nonReentrant {
         require(!paused, "the contract is paused");
+        require((freeClaimedAmount[_id][_to] + _mintAmount) <= _maxAmount);
+        require(checkFreeClaimAllowlist(_id, _to, _maxAmount, proof), "error");
         require(_mintAmount > 0, "need to mint at least 1 NFT");
+        require(
+            totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
+            "exceeds max supply"
+        );
         require(
             block.timestamp >= nftList[_id].freeClaimStartTime &&
                 block.timestamp <= nftList[_id].freeClaimEndTime,
             "free claim is closed"
         );
-        require(
-            totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
-            "exceeds max supply"
-        );
-        require((freeClaimedAmount[_id][_to] + _mintAmount) <= _maxAmount);
-        require(checkFreeClaimAllowlist(_id, _to, _maxAmount, proof), "error");
-
         freeClaimedAmount[_id][_to] += _mintAmount;
         _mint(_to, _id, _mintAmount, "");
     }
@@ -141,21 +128,20 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         bytes32[] calldata proof
     ) external payable nonReentrant {
         require(!paused, "the contract is paused");
+        require((preSaleMintedAmount[_id][_to] + _mintAmount) <= _maxAmount);
+        require(checkPreSaleAllowlist(_id, _to, _maxAmount, proof), "error");
         require(_mintAmount > 0, "need to mint at least 1 NFT");
+        uint256 cost = nftList[_id].preSalePrice * _mintAmount;
+        require(msg.value >= cost, "incorrect payment");
+        require(
+            totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
+            "exceeds max supply"
+        );
         require(
             block.timestamp >= nftList[_id].preSaleStartTime &&
                 block.timestamp <= nftList[_id].preSaleEndTime,
             "pre-sale is closed"
         );
-        require(
-            totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
-            "exceeds max supply"
-        );
-        require((preSaleMintedAmount[_id][_to] + _mintAmount) <= _maxAmount);
-        require(checkPreSaleAllowlist(_id, _to, _maxAmount, proof), "error");
-        uint256 cost = nftList[_id].preSalePrice * _mintAmount;
-        require(msg.value >= cost, "incorrect payment");
-
         preSaleMintedAmount[_id][_to] += _mintAmount;
         _mint(_to, _id, _mintAmount, "");
     }
@@ -168,10 +154,11 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         require(!paused, "the contract is paused");
         require(_mintAmount > 0, "need to mint at least 1 NFT");
         require(
-            block.timestamp >= nftList[_id].publicSaleStartTime &&
-                block.timestamp <= nftList[_id].publicSaleEndTime,
-            "public sale is closed"
+            (publicMintedAmount[_id][_to] + _mintAmount) <=
+                nftList[_id].maxPublicMintAmountPerAddress
         );
+        uint256 cost = nftList[_id].publicPrice * _mintAmount;
+        require(msg.value >= cost, "incorrect payment");
         require(
             totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
             "exceeds max supply"
@@ -181,13 +168,10 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
             "exceeds max amount per tx"
         );
         require(
-            (publicMintedAmount[_id][_to] + _mintAmount) <=
-                nftList[_id].maxPublicMintAmountPerAddress,
-            "exceeds max amount per address"
+            block.timestamp >= nftList[_id].publicSaleStartTime &&
+                block.timestamp <= nftList[_id].publicSaleEndTime,
+            "public sale is closed"
         );
-        uint256 cost = nftList[_id].publicPrice * _mintAmount;
-        require(msg.value >= cost, "incorrect payment");
-
         publicMintedAmount[_id][_to] += _mintAmount;
         _mint(_to, _id, _mintAmount, "");
     }
