@@ -7,7 +7,8 @@ describe("Greeter", function () {
     const greeter = await Greeter.deploy();
     await greeter.deployed();
 
-    expect(await greeter.name()).to.equal("Pluto Lab NFT");
+    expect(await greeter.baseTokenURI()).to.equal("123");
+    expect(await greeter.preSaleStartTime()).to.equal("1")
 
     // const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
 
