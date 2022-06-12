@@ -8,6 +8,23 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/cryptography/MerkleProof.sol";
 import "@openzeppelin/contracts/token/common/ERC2981.sol";
 
+struct Nft {
+    uint256 maxAmount;
+    uint256 preSalePrice;
+    uint256 publicPrice;
+    uint256 freeClaimStartTime;
+    uint256 freeClaimEndTime;
+    uint256 preSaleStartTime;
+    uint256 preSaleEndTime;
+    uint256 publicSaleStartTime;
+    uint256 publicSaleEndTime;
+    uint256 maxPublicMintAmountPerTx;
+    uint256 maxPublicMintAmountPerAddress;
+    bytes32 freeClaimMerkleRoot;
+    bytes32 preSaleMerkleRoot;
+    string tokenURI;
+}
+
 contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
     string public name;
     string public symbol;
@@ -32,24 +49,7 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
             super.supportsInterface(interfaceId);
     }
 
-    struct Nft {
-        uint256 maxAmount;
-        uint256 preSalePrice;
-        uint256 publicPrice;
-        uint256 freeClaimStartTime;
-        uint256 freeClaimEndTime;
-        uint256 preSaleStartTime;
-        uint256 preSaleEndTime;
-        uint256 publicSaleStartTime;
-        uint256 publicSaleEndTime;
-        uint256 maxPublicMintAmountPerTx;
-        uint256 maxPublicMintAmountPerAddress;
-        bytes32 freeClaimMerkleRoot;
-        bytes32 preSaleMerkleRoot;
-        string tokenURI;
-    }
-
-    mapping(uint256 => Nft) nftList;
+    mapping(uint256 => Nft) public nftList;
     mapping(uint256 => mapping(address => uint256)) freeClaimedAmount;
     mapping(uint256 => mapping(address => uint256)) preSaleMintedAmount;
     mapping(uint256 => mapping(address => uint256)) publicMintedAmount;
@@ -62,10 +62,6 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
     ) external onlyOwner {
         nftList[_id] = _nft;
         _setTokenRoyalty(_id, _receiver, _feeNumerator);
-    }
-
-    function checkNftStatus(uint256 _id) public view returns (Nft memory) {
-        return nftList[_id];
     }
 
     function checkFreeClaimAllowlist(
@@ -126,8 +122,8 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
             totalSupply(_id) + _mintAmount <= nftList[_id].maxAmount,
             "exceeds max supply"
         );
-        require((freeClaimedAmount[_id][_to] + _mintAmount) <= _maxAmount);
-        require(checkFreeClaimAllowlist(_id, _to, _maxAmount, proof), "error");
+        require(checkFreeClaimAllowlist(_id, _to, _maxAmount, proof), "not in allowlist");
+        require((freeClaimedAmount[_id][_to] + _mintAmount) <= _maxAmount, "exceeds max claimable amount");
 
         freeClaimedAmount[_id][_to] += _mintAmount;
         _mint(_to, _id, _mintAmount, "");
@@ -152,7 +148,7 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
             "exceeds max supply"
         );
         require((preSaleMintedAmount[_id][_to] + _mintAmount) <= _maxAmount);
-        require(checkPreSaleAllowlist(_id, _to, _maxAmount, proof), "error");
+        require(checkPreSaleAllowlist(_id, _to, _maxAmount, proof), "not in allowlist");
         uint256 cost = nftList[_id].preSalePrice * _mintAmount;
         require(msg.value >= cost, "incorrect payment");
 
@@ -196,8 +192,8 @@ contract PlutoLabNFT is ERC1155Supply, ERC2981, Ownable, ReentrancyGuard {
         _burn(msg.sender, _id, _amount);
     }
 
-    function setContractStatus() external onlyOwner {
-        paused = !paused;
+    function setContractPaused(bool _toggle) external onlyOwner {
+        paused = _toggle;
     }
 
     function setURI(uint256 _id, string memory _uri) external onlyOwner {
