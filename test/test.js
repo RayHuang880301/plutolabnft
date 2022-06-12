@@ -512,12 +512,12 @@ describe("PlutoLabNFT", function () {
           maxAmount: BigNumber.from(100),
           preSalePrice: ethers.utils.parseEther('0.1'),
           publicPrice: ethers.utils.parseEther('1'),
-          freeClaimStartTime: await getBlockTimestamp() + 4,
-          freeClaimEndTime: await getBlockTimestamp() + 7,
+          freeClaimStartTime: 0,
+          freeClaimEndTime: 0,
           preSaleStartTime: await getBlockTimestamp() + 4,
           preSaleEndTime: await getBlockTimestamp() + 7,
-          publicSaleStartTime: await getBlockTimestamp(),
-          publicSaleEndTime: await getBlockTimestamp(),
+          publicSaleStartTime: 0,
+          publicSaleEndTime: 0,
           maxPublicMintAmountPerTx: BigNumber.from(1),
           maxPublicMintAmountPerAddress: BigNumber.from(1),
           freeClaimMerkleRoot: root,
@@ -623,12 +623,12 @@ describe("PlutoLabNFT", function () {
           maxAmount: BigNumber.from(100),
           preSalePrice: ethers.utils.parseEther('0.1'),
           publicPrice: ethers.utils.parseEther('1'),
-          freeClaimStartTime: await getBlockTimestamp() + 4,
-          freeClaimEndTime: await getBlockTimestamp() + 7,
-          preSaleStartTime: await getBlockTimestamp() + 4,
-          preSaleEndTime: await getBlockTimestamp() + 7,
-          publicSaleStartTime: await getBlockTimestamp(),
-          publicSaleEndTime: await getBlockTimestamp(),
+          freeClaimStartTime: 0,
+          freeClaimEndTime: 0,
+          preSaleStartTime: 0,
+          preSaleEndTime: 0,
+          publicSaleStartTime: await getBlockTimestamp() + 4,
+          publicSaleEndTime: await getBlockTimestamp() + 7,
           maxPublicMintAmountPerTx: BigNumber.from(1),
           maxPublicMintAmountPerAddress: BigNumber.from(1),
           freeClaimMerkleRoot: root,
@@ -645,26 +645,24 @@ describe("PlutoLabNFT", function () {
           feeNumerator
         );
         
-        const acc1MaxAmount = 2;
         const acc1Addr = this.acc1.address;
-        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
 
         await expect(
-          this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          this.Contract.publicMint(acc1Addr, id, 1, {
           value: ethers.utils.parseEther('1')
         })
         ).to.be.revertedWith('public sale is closed');
 
         await delay(3000);
         
-        await this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+        await this.Contract.publicMint(acc1Addr, id, 1, {
           value: ethers.utils.parseEther('1')
         })
         expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
 
         await delay(3000);
         await expect(
-          this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          this.Contract.publicMint(acc1Addr, id, 1, {
             value: ethers.utils.parseEther('1')
           })
         ).to.be.revertedWith('public sale is closed');
@@ -819,24 +817,4 @@ describe("PlutoLabNFT", function () {
         ).to.be.revertedWith('Ownable: caller is not the owner');
       })
     })
-
-    // TODO: Withdraw
-  // });
-
-  // it("Should return the new greeting once it's changed", async function () {
-  //   const Greeter = await ethers.getContractFactory("PlutoLabNFT");
-  //   const greeter = await Greeter.deploy();
-  //   await greeter.deployed();
-
-  //   expect(await greeter.name()).to.equal("Pluto Lab NFT");
-
-  //   // const setGreetingTx = await greeter.setGreeting("Hola, mundo!");
-
-  //   // // wait until the transaction is mined
-  //   // await setGreetingTx.wait();
-
-  //   // expect(await greeter.greet()).to.equal("Hola, mundo!");
-  // });
-
-  // 
 });
