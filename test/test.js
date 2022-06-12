@@ -359,102 +359,102 @@ describe("PlutoLabNFT", function () {
         ).to.be.revertedWith('exceeds max supply');
       });
 
-      // it('freeClaim: pause', async() => {
-      //   const acc1MaxAmount = 2;
-      //   const acc1Addr = this.acc1.address;
-      //   const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
-      //   await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
+      it('freeClaim: pause', async() => {
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+        await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
 
-      //   await this.Contract.setContractPaused(true);
-      //   await expect(
-      //     this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   ).to.be.revertedWith('the contract is paused');
-      // });
-      // it('freeClaim: balance', async() => {
-      //   const acc1MaxAmount = 2;
-      //   const acc1Addr = this.acc1.address;
-      //   const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
-      //   await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
+        await this.Contract.setContractPaused(true);
+        await expect(
+          this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        ).to.be.revertedWith('the contract is paused');
+      });
+      it('freeClaim: balance', async() => {
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+        await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
 
-      // });
-      // it('freeClaim: max claim amount', async() => {
-      //   const acc1MaxAmount = 2;
-      //   const acc1Addr = this.acc1.address;
-      //   const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
-      //   await this.Contract.freeClaim(acc1Addr, id, 2, acc1MaxAmount, proof)
-      //   expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(2);
+      });
+      it('freeClaim: max claim amount', async() => {
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+        await this.Contract.freeClaim(acc1Addr, id, 2, acc1MaxAmount, proof)
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(2);
 
-      //   await expect(
-      //     this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   ).to.be.revertedWith('exceeds max claimable amount');
-      // });
-      // it('freeClaim: timeStamp', async() => {
-      //   const nftItem = {
-      //     maxAmount: BigNumber.from(100),
-      //     preSalePrice: ethers.utils.parseEther('0.1'),
-      //     publicPrice: ethers.utils.parseEther('1'),
-      //     freeClaimStartTime: await getBlockTimestamp() + 4,
-      //     freeClaimEndTime: await getBlockTimestamp() + 7,
-      //     preSaleStartTime: await getBlockTimestamp(),
-      //     preSaleEndTime: await getBlockTimestamp(),
-      //     publicSaleStartTime: await getBlockTimestamp(),
-      //     publicSaleEndTime: await getBlockTimestamp(),
-      //     maxPublicMintAmountPerTx: BigNumber.from(1),
-      //     maxPublicMintAmountPerAddress: BigNumber.from(1),
-      //     freeClaimMerkleRoot: root,
-      //     preSaleMerkleRoot: root,
-      //     tokenURI: '',
-      //   }
-      //   const receiver = this.accounts[0].address;
-      //   const feeNumerator = BigNumber.from(1000);
+        await expect(
+          this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        ).to.be.revertedWith('exceeds max claimable amount');
+      });
+      it('freeClaim: timeStamp', async() => {
+        const nftItem = {
+          maxAmount: BigNumber.from(100),
+          preSalePrice: ethers.utils.parseEther('0.1'),
+          publicPrice: ethers.utils.parseEther('1'),
+          freeClaimStartTime: await getBlockTimestamp() + 4,
+          freeClaimEndTime: await getBlockTimestamp() + 7,
+          preSaleStartTime: await getBlockTimestamp(),
+          preSaleEndTime: await getBlockTimestamp(),
+          publicSaleStartTime: await getBlockTimestamp(),
+          publicSaleEndTime: await getBlockTimestamp(),
+          maxPublicMintAmountPerTx: BigNumber.from(1),
+          maxPublicMintAmountPerAddress: BigNumber.from(1),
+          freeClaimMerkleRoot: root,
+          preSaleMerkleRoot: root,
+          tokenURI: '',
+        }
+        const receiver = this.accounts[0].address;
+        const feeNumerator = BigNumber.from(1000);
 
-      //   await this.Contract.setNftStatus(
-      //     id,
-      //     nftItem,
-      //     receiver,
-      //     feeNumerator
-      //   );
+        await this.Contract.setNftStatus(
+          id,
+          nftItem,
+          receiver,
+          feeNumerator
+        );
         
-      //   const acc1MaxAmount = 2;
-      //   const acc1Addr = this.acc1.address;
-      //   const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
 
-      //   await expect(
-      //     this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   ).to.be.revertedWith('free claim is closed');
+        await expect(
+          this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        ).to.be.revertedWith('free claim is closed');
 
-      //   await delay(3000);
+        await delay(3000);
         
-      //   await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
+        await this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
 
-      //   await delay(3000);
-      //   await expect(
-      //     this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
-      //   ).to.be.revertedWith('free claim is closed');
+        await delay(3000);
+        await expect(
+          this.Contract.freeClaim(acc1Addr, id, 1, acc1MaxAmount, proof)
+        ).to.be.revertedWith('free claim is closed');
 
-      // });
-      // it('freeClaim: max total supply', async() => {
-      //   const acc3MaxAmount = 1000;
-      //   const acc3Addr = this.acc3.address;
-      //   const proof = getAllowedItemProof(tree, acc3Addr, acc3MaxAmount);
-      //   await this.Contract.connect(this.acc3).freeClaim(acc3Addr, id, 100, acc3MaxAmount, proof)
-      //   expect(await this.Contract.balanceOf(acc3Addr, id)).to.eq(100);
+      });
+      it('freeClaim: max total supply', async() => {
+        const acc3MaxAmount = 1000;
+        const acc3Addr = this.acc3.address;
+        const proof = getAllowedItemProof(tree, acc3Addr, acc3MaxAmount);
+        await this.Contract.connect(this.acc3).freeClaim(acc3Addr, id, 100, acc3MaxAmount, proof)
+        expect(await this.Contract.balanceOf(acc3Addr, id)).to.eq(100);
 
-      //   await expect(
-      //     this.Contract.connect(this.acc3).freeClaim(acc3Addr, id, 1, acc3MaxAmount, proof)
-      //   ).to.be.revertedWith('exceeds max supply');
-      // });
-      // it('freeClaim: allowlist', async() => {
-      //   const acc1MaxAmount = 2;
-      //   const acc2Addr = this.acc2.address;
-      //   const proof = getAllowedItemProof(tree, acc2Addr, acc1MaxAmount);
-      //   await expect(
-      //     this.Contract.freeClaim(acc2Addr, id, 1, acc1MaxAmount, proof)
-      //   ).to.be.revertedWith('not in allowlist');
-      // });
+        await expect(
+          this.Contract.connect(this.acc3).freeClaim(acc3Addr, id, 1, acc3MaxAmount, proof)
+        ).to.be.revertedWith('exceeds max supply');
+      });
+      it('freeClaim: allowlist', async() => {
+        const acc1MaxAmount = 2;
+        const acc2Addr = this.acc2.address;
+        const proof = getAllowedItemProof(tree, acc2Addr, acc1MaxAmount);
+        await expect(
+          this.Contract.freeClaim(acc2Addr, id, 1, acc1MaxAmount, proof)
+        ).to.be.revertedWith('not in allowlist');
+      });
 
       // 
 
@@ -508,7 +508,55 @@ describe("PlutoLabNFT", function () {
         ).to.be.revertedWith('the contract is paused');
       });
       it('preSaleMint: timeStamp', async() => {
-        // TODO: add test
+        const nftItem = {
+          maxAmount: BigNumber.from(100),
+          preSalePrice: ethers.utils.parseEther('0.1'),
+          publicPrice: ethers.utils.parseEther('1'),
+          freeClaimStartTime: await getBlockTimestamp() + 4,
+          freeClaimEndTime: await getBlockTimestamp() + 7,
+          preSaleStartTime: await getBlockTimestamp() + 4,
+          preSaleEndTime: await getBlockTimestamp() + 7,
+          publicSaleStartTime: await getBlockTimestamp(),
+          publicSaleEndTime: await getBlockTimestamp(),
+          maxPublicMintAmountPerTx: BigNumber.from(1),
+          maxPublicMintAmountPerAddress: BigNumber.from(1),
+          freeClaimMerkleRoot: root,
+          preSaleMerkleRoot: root,
+          tokenURI: '',
+        }
+        const receiver = this.accounts[0].address;
+        const feeNumerator = BigNumber.from(1000);
+
+        await this.Contract.setNftStatus(
+          id,
+          nftItem,
+          receiver,
+          feeNumerator
+        );
+        
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+
+        await expect(
+          this.Contract.preSaleMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          value: ethers.utils.parseEther('0.1')
+        })
+        ).to.be.revertedWith('pre-sale is closed');
+
+        await delay(3000);
+        
+        await this.Contract.preSaleMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          value: ethers.utils.parseEther('0.1')
+        })
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
+
+        await delay(3000);
+        await expect(
+          this.Contract.preSaleMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+            value: ethers.utils.parseEther('0.1')
+          })
+        ).to.be.revertedWith('pre-sale is closed');
       });
       it('preSaleMint: max total supply', async() => {
         const acc3MaxAmount = 1000;
@@ -571,7 +619,55 @@ describe("PlutoLabNFT", function () {
         ).to.be.revertedWith('the contract is paused');
       });
       it('publicMint: timestamp', async() => {
-        // TODO: add test
+        const nftItem = {
+          maxAmount: BigNumber.from(100),
+          preSalePrice: ethers.utils.parseEther('0.1'),
+          publicPrice: ethers.utils.parseEther('1'),
+          freeClaimStartTime: await getBlockTimestamp() + 4,
+          freeClaimEndTime: await getBlockTimestamp() + 7,
+          preSaleStartTime: await getBlockTimestamp() + 4,
+          preSaleEndTime: await getBlockTimestamp() + 7,
+          publicSaleStartTime: await getBlockTimestamp(),
+          publicSaleEndTime: await getBlockTimestamp(),
+          maxPublicMintAmountPerTx: BigNumber.from(1),
+          maxPublicMintAmountPerAddress: BigNumber.from(1),
+          freeClaimMerkleRoot: root,
+          preSaleMerkleRoot: root,
+          tokenURI: '',
+        }
+        const receiver = this.accounts[0].address;
+        const feeNumerator = BigNumber.from(1000);
+
+        await this.Contract.setNftStatus(
+          id,
+          nftItem,
+          receiver,
+          feeNumerator
+        );
+        
+        const acc1MaxAmount = 2;
+        const acc1Addr = this.acc1.address;
+        const proof = getAllowedItemProof(tree, acc1Addr, acc1MaxAmount);
+
+        await expect(
+          this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          value: ethers.utils.parseEther('1')
+        })
+        ).to.be.revertedWith('public sale is closed');
+
+        await delay(3000);
+        
+        await this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+          value: ethers.utils.parseEther('1')
+        })
+        expect(await this.Contract.balanceOf(acc1Addr, id)).to.eq(1);
+
+        await delay(3000);
+        await expect(
+          this.Contract.publicMint(acc1Addr, id, 1, acc1MaxAmount, proof, {
+            value: ethers.utils.parseEther('1')
+          })
+        ).to.be.revertedWith('public sale is closed');
       });
       it('publicMint: max total supply', async() => {
         const acc1Addr = this.acc1.address;
@@ -609,7 +705,51 @@ describe("PlutoLabNFT", function () {
         ).to.be.revertedWith('exceeds max amount per address');
       });
 
-    });    
+      it('burn - 1', async() => {
+        await this.Contract.publicMint(this.acc1.address, id, 50, {
+          value: ethers.utils.parseEther('1').mul(50)
+        });
+        expect(await this.Contract.balanceOf(this.acc1.address, id)).to.eq(50);
+
+        await this.Contract.connect(this.acc1).burn(id, 1);
+        expect(await this.Contract.balanceOf(this.acc1.address, id)).to.eq(49);
+
+        await this.Contract.connect(this.acc1).burn(id, 2);
+        expect(await this.Contract.balanceOf(this.acc1.address, id)).to.eq(47);
+      });
+
+      it('burn - 2', async() => {
+        await expect(
+          this.Contract.connect(this.acc1).burn(2, 1)
+        ).to.be.revertedWith('ERC1155: burn amount exceeds totalSupply');
+      });
+
+      it('burn - 3', async() => {
+        await this.Contract.connect(this.acc1).publicMint(this.acc1.address, id, 50, {
+          value: ethers.utils.parseEther('1').mul(50)
+        });
+        await expect(
+          this.Contract.connect(this.acc2).burn(id, 1)
+        ).to.be.revertedWith('ERC1155: burn amount exceeds balance');
+      });
+
+      it('withdraw', async () => {
+        const prov = ethers.getDefaultProvider();
+
+        await this.Contract.connect(this.acc1).publicMint(this.acc1.address, 1, 50, {
+          value: ethers.utils.parseEther('1').mul(50)
+        });
+
+        const beforeBalance = await this.owner.getBalance();
+        const contractBalance =await prov.getBalance(this.Contract.address);
+        const txResp = await this.Contract.withdraw(contractBalance);
+        const txReceipt = await txResp.wait();
+        const withdrawGasFee = BigNumber.from(txReceipt.gasUsed).mul(txReceipt.effectiveGasPrice);
+        const afterBalance = await this.owner.getBalance();
+        expect(afterBalance.sub(beforeBalance).add(withdrawGasFee)).to.eq(contractBalance);
+      });
+      
+    });
 
     describe("onlyOwner", () => {
       it('transfer owner', async () => {
@@ -663,9 +803,23 @@ describe("PlutoLabNFT", function () {
           this.Contract.connect(this.accounts[1]).setURI(1, 'https://pluto.com/')
         ).to.be.revertedWith('Ownable: caller is not the owner');
       })
+      it("devMint", async () => {
+        await expect(
+          this.Contract.connect(this.accounts[1]).devMint(1, 1)
+        ).to.be.revertedWith('Ownable: caller is not the owner');
+      })
+      it("withdraw", async () => {
+        await expect(
+          this.Contract.connect(this.accounts[1]).withdraw(1)
+        ).to.be.revertedWith('Ownable: caller is not the owner');
+      })
+      it("setContractPaused", async () => {
+        await expect(
+          this.Contract.connect(this.accounts[1]).setContractPaused(true)
+        ).to.be.revertedWith('Ownable: caller is not the owner');
+      })
     })
 
-    // TODO: ContractStatus
     // TODO: Withdraw
   // });
 
